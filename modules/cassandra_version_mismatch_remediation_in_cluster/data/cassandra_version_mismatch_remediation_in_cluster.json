@@ -1,0 +1,210 @@
+{
+  "name": "cassandra_version_mismatch_remediation_in_cluster",
+  "description": "Cassandra Version Mismatch Remediation in Cluster is an incident type that occurs when there is a discrepancy in the version of Cassandra installed across a cluster. This can lead to various issues, such as data inconsistencies, node failures, and performance degradation. The incident requires a remediation process to resolve the issue, which may involve upgrading or downgrading Cassandra versions, ensuring consistency across all nodes, and verifying successful synchronization of data. It is essential to address this incident type promptly to prevent further complications and ensure the continuous availability of the cluster.",
+  "params": [
+    {
+      "name": "TABLE_NAME",
+      "value": ""
+    },
+    {
+      "name": "NODE1_NODE2_NODE3",
+      "value": ""
+    },
+    {
+      "name": "LATEST_VERSION",
+      "value": ""
+    },
+    {
+      "name": "CASSANDRA_VERSION",
+      "value": ""
+    },
+    {
+      "name": "KEYSPACE_NAME",
+      "value": ""
+    },
+    {
+      "name": "LINK_TO_LATEST_CASSANDRA_VERSION",
+      "value": ""
+    },
+    {
+      "name": "CASSANDRA_TARBALL_NAME",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Cassandra Version Mismatch Remediation in Cluster.\nCassandra Version Mismatch Remediation in Cluster is an incident type that occurs when there is a discrepancy in the version of Cassandra installed across a cluster. This can lead to various issues, such as data inconsistencies, node failures, and performance degradation. The incident requires a remediation process to resolve the issue, which may involve upgrading or downgrading Cassandra versions, ensuring consistency across all nodes, and verifying successful synchronization of data. It is essential to address this incident type promptly to prevent further complications and ensure the continuous availability of the cluster."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check Cassandra version on all nodes"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool version`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check status of all nodes in the cluster"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool status`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the schema version of the cluster"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool describecluster`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the difference in schema version across nodes"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool describekeyspace ${KEYSPACE_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the difference in schema version across datacenters"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool describecluster`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the logs for errors related to Cassandra version mismatch"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -r \"version mismatch\" /var/log/cassandra/system.log`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the logs for other errors or warnings related to Cassandra"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `grep -r \"ERROR\\|WARN\" /var/log/cassandra/system.log`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the consistency level of the data on all nodes"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool consistency ${KEYSPACE_NAME}.${TABLE_NAME}`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the repair status of the nodes"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool repair -pr`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the node's anti-entropy service"
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool getsstables ${KEYSPACE_NAME} ${TABLE_NAME} | xargs nodetool scrub`"
+    },
+    {
+      "name": "cell_22",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the node's incremental repair service"
+    },
+    {
+      "name": "cell_23",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `nodetool verify -pr`"
+    },
+    {
+      "name": "cell_24",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## A new version of Cassandra was installed on a few nodes, but not all of them, resulting in a version mismatch."
+    },
+    {
+      "name": "cell_25",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_cassandra_version_check($NODE1_NODE2_NODE3)"
+    },
+    {
+      "name": "cell_26",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Upgrade all nodes to the latest version of Cassandra, ensuring that the upgrade process is completed successfully."
+    },
+    {
+      "name": "cell_27",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_cassandra_upgrade($NODE1_NODE2_NODE3, $LATEST_VERSION, $CASSANDRA_VERSION, $LINK_TO_LATEST_CASSANDRA_VERSION, $CASSANDRA_TARBALL_NAME)"
+    }
+  ]
+}
